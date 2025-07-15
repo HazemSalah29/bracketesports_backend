@@ -96,5 +96,5 @@ switch ($choice) {
 }
 
 Write-Host ""
-Write-Host "📚 For detailed instructions, see DEPLOYMENT_GUIDE.md" -ForegroundColor Cyan
-Write-Host "🔧 Don't forget to set up your environment variables!" -ForegroundColor Cyan
+Write-Host "For detailed instructions, see DEPLOYMENT_GUIDE.md" -ForegroundColor Cyan
+Write-Host "Don't forget to set up your environment variables!" -ForegroundColor Cyan

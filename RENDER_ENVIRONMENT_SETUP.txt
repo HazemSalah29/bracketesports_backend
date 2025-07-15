@@ -1,0 +1,74 @@
+# =================================================
+# RENDER ENVIRONMENT VARIABLES CONFIGURATION
+# Add these in your Render dashboard: Environment tab
+# =================================================
+
+# ===== ESSENTIAL VARIABLES (REQUIRED) =====
+
+NODE_ENV=production
+
+PORT=10000
+
+# MongoDB Connection String
+# Replace YOUR_USERNAME and YOUR_PASSWORD with your actual MongoDB credentials
+MONGODB_URI=mongodb+srv://YOUR_USERNAME:YOUR_PASSWORD@bracketesports-prod.6w6yjfb.mongodb.net/bracketesports?retryWrites=true&w=majority
+
+# JWT Secret - Generate a random 32+ character string
+# You can use: https://www.allkeysgenerator.com/Random/Security-Encryption-Key-Generator.aspx
+JWT_SECRET=your-super-secret-jwt-key-at-least-32-characters-long-and-random
+
+# CORS Settings - Your frontend URL (update when you deploy frontend)
+FRONTEND_URL=http://localhost:3000
+
+# ===== API KEYS (Optional but recommended for full functionality) =====
+
+# Stripe (for payments) - Get from https://stripe.com
+STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key_here
+STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret_here
+
+# Riot Games API - Get from https://developer.riotgames.com/
+RIOT_API_KEY=RGAPI-your-riot-games-api-key-here
+
+# News API - Get from https://newsapi.org/
+NEWS_API_KEY=your-newsapi-org-key-here
+
+# ===== OPTIONAL SETTINGS (Use defaults if not set) =====
+
+RATE_LIMIT_WINDOW_MS=900000
+RATE_LIMIT_MAX_REQUESTS=100
+COIN_TO_USD_RATE=0.01
+PLATFORM_FEE_PERCENTAGE=30
+LOG_LEVEL=info
+
+# =================================================
+# STEP-BY-STEP SETUP INSTRUCTIONS
+# =================================================
+
+# 1. Go to your Render dashboard
+# 2. Click on your "bracketesports-backend" service
+# 3. Go to "Environment" tab
+# 4. Add each variable above (one by one)
+# 5. Click "Save Changes"
+# 6. Your service will automatically redeploy
+
+# =================================================
+# MONGODB SETUP CHECKLIST
+# =================================================
+
+# ✅ Cluster created: bracketesports-prod.6w6yjfb.mongodb.net
+# ❓ Database user created? (username/password)
+# ❓ Network access configured? (Allow 0.0.0.0/0)
+# ❓ Connection string tested?
+
+# =================================================
+# QUICK TEST URLS FOR YOUR API
+# =================================================
+
+# Health Check:
+# https://bracketesports-backend.onrender.com/api/health
+
+# Coin Packages:
+# https://bracketesports-backend.onrender.com/api/coins/packages
+
+# Exchange Rate:
+# https://bracketesports-backend.onrender.com/api/coins/exchange-rate

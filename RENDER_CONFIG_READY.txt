@@ -1,0 +1,73 @@
+# =================================================
+# RENDER ENVIRONMENT VARIABLES - READY TO USE
+# Copy each variable below into your Render dashboard
+# =================================================
+
+# ===== ESSENTIAL VARIABLES (COPY THESE FIRST) =====
+
+NODE_ENV=production
+
+PORT=10000
+
+# Your MongoDB Connection String (with your actual credentials)
+MONGODB_URI=mongodb+srv://bracketesports_admin:UU5wg8DCeXu7qfNY@bracketesports-prod.6w6yjfb.mongodb.net/bracketesports?retryWrites=true&w=majority
+
+# JWT Secret (Replace with a random 32+ character string)
+JWT_SECRET=BracketEsports2025SecretKeyForJWTTokensVerySecure123456
+
+# CORS Settings (Update when you deploy your frontend)
+FRONTEND_URL=http://localhost:3000
+
+# ===== OPTIONAL API KEYS (Add these later for full functionality) =====
+
+# Stripe (Leave empty for now, add when you set up payments)
+STRIPE_SECRET_KEY=sk_test_your_stripe_key_here_when_ready
+STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret_here
+
+# Riot Games API (Leave empty for now)
+RIOT_API_KEY=RGAPI-your_key_when_ready
+
+# News API (Leave empty for now)
+NEWS_API_KEY=your_newsapi_key_when_ready
+
+# ===== VIRTUAL CURRENCY SETTINGS =====
+
+COIN_TO_USD_RATE=0.01
+PLATFORM_FEE_PERCENTAGE=30
+
+# ===== RATE LIMITING =====
+
+RATE_LIMIT_WINDOW_MS=900000
+RATE_LIMIT_MAX_REQUESTS=100
+
+# =================================================
+# RENDER SETUP INSTRUCTIONS
+# =================================================
+
+# 1. Go to https://dashboard.render.com
+# 2. Click on your "bracketesports-backend" service
+# 3. Click "Environment" tab on the left
+# 4. For each variable above:
+#    - Click "Add Environment Variable"
+#    - Enter the Key (e.g., NODE_ENV)
+#    - Enter the Value (e.g., production)
+#    - Click "Save Changes"
+# 5. After adding all variables, your service will redeploy automatically
+
+# =================================================
+# PRIORITY ORDER (Add these first)
+# =================================================
+
+# 1. NODE_ENV=production
+# 2. PORT=10000
+# 3. MONGODB_URI=mongodb+srv://bracketesports_admin:UU5wg8DCeXu7qfNY@bracketesports-prod.6w6yjfb.mongodb.net/bracketesports?retryWrites=true&w=majority
+# 4. JWT_SECRET=BracketEsports2025SecretKeyForJWTTokensVerySecure123456
+# 5. FRONTEND_URL=http://localhost:3000
+
+# =================================================
+# TEST URLS AFTER SETUP
+# =================================================
+
+# Health Check: https://bracketesports-backend.onrender.com/api/health
+# Coin Packages: https://bracketesports-backend.onrender.com/api/coins/packages
+# Exchange Rate: https://bracketesports-backend.onrender.com/api/coins/exchange-rate
