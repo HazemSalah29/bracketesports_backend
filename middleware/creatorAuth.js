@@ -7,11 +7,11 @@ const creatorAuth = async (req, res, next) => {
 
     // Get user with creator profile
     const user = await User.findById(userId).populate('creatorProfile');
-    
+
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: 'User not found'
+        message: 'User not found',
       });
     }
 
@@ -19,7 +19,7 @@ const creatorAuth = async (req, res, next) => {
     if (user.accountType !== 'creator') {
       return res.status(403).json({
         success: false,
-        message: 'Creator account required'
+        message: 'Creator account required',
       });
     }
 
@@ -27,7 +27,8 @@ const creatorAuth = async (req, res, next) => {
     if (!user.creatorProfile) {
       return res.status(403).json({
         success: false,
-        message: 'Creator profile not found. Please apply for creator program first.'
+        message:
+          'Creator profile not found. Please apply for creator program first.',
       });
     }
 
@@ -38,20 +39,20 @@ const creatorAuth = async (req, res, next) => {
         message: 'Creator application not approved yet',
         data: {
           status: user.creatorProfile.applicationStatus.status,
-          appliedAt: user.creatorProfile.applicationStatus.appliedAt
-        }
+          appliedAt: user.creatorProfile.applicationStatus.appliedAt,
+        },
       });
     }
 
     // Add creator profile to request
     req.creatorProfile = user.creatorProfile;
-    
+
     next();
   } catch (error) {
     console.error('Creator auth middleware error:', error);
     res.status(500).json({
       success: false,
-      message: 'Server error in creator authentication'
+      message: 'Server error in creator authentication',
     });
   }
 };

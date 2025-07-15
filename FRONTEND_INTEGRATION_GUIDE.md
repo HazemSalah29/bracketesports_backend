@@ -113,20 +113,20 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     const response = await api.post('/auth/login', { email, password });
     const { user, token } = response.data.data;
-    
+
     localStorage.setItem('authToken', token);
     setUser(user);
-    
+
     return response.data;
   };
 
   const register = async (userData) => {
     const response = await api.post('/auth/register', userData);
     const { user, token } = response.data.data;
-    
+
     localStorage.setItem('authToken', token);
     setUser(user);
-    
+
     return response.data;
   };
 
@@ -136,14 +136,16 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{
-      user,
-      loading,
-      login,
-      register,
-      logout,
-      fetchCurrentUser
-    }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        login,
+        register,
+        logout,
+        fetchCurrentUser,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -157,6 +159,7 @@ export const AuthProvider = ({ children }) => {
 ### 🔑 Authentication Endpoints
 
 #### Register User
+
 ```javascript
 POST /api/auth/register
 
@@ -189,6 +192,7 @@ POST /api/auth/register
 ```
 
 #### Login User
+
 ```javascript
 POST /api/auth/login
 
@@ -202,6 +206,7 @@ POST /api/auth/login
 ```
 
 #### Get Current User
+
 ```javascript
 GET /api/auth/me
 // Headers: Authorization: Bearer {token}
@@ -220,6 +225,7 @@ GET /api/auth/me
 ### 🎮 Gaming Account Endpoints
 
 #### Link Riot Games Account
+
 ```javascript
 POST /api/gaming-accounts/link-riot
 
@@ -261,6 +267,7 @@ POST /api/gaming-accounts/link-riot
 ```
 
 #### Get Gaming Accounts
+
 ```javascript
 GET /api/gaming-accounts
 
@@ -278,6 +285,7 @@ GET /api/gaming-accounts
 ### 🏆 Tournament Endpoints
 
 #### Create Tournament (Creator Only)
+
 ```javascript
 POST /api/tournaments
 
@@ -321,6 +329,7 @@ POST /api/tournaments
 ```
 
 #### Get Tournaments (with filtering)
+
 ```javascript
 GET /api/tournaments?page=1&limit=10&game=League%20of%20Legends&status=registration
 
@@ -353,6 +362,7 @@ GET /api/tournaments?page=1&limit=10&game=League%20of%20Legends&status=registrat
 ```
 
 #### Join Tournament
+
 ```javascript
 POST /api/tournaments/{tournamentId}/join
 
@@ -378,6 +388,7 @@ POST /api/tournaments/{tournamentId}/join
 ### 👥 Team Endpoints
 
 #### Create Team
+
 ```javascript
 POST /api/teams
 
@@ -412,6 +423,7 @@ POST /api/teams
 ```
 
 #### Get Teams
+
 ```javascript
 GET /api/teams?game=League%20of%20Legends&region=NA&isRecruiting=true
 
@@ -422,6 +434,7 @@ GET /api/teams?game=League%20of%20Legends&region=NA&isRecruiting=true
 ```
 
 #### Join Team
+
 ```javascript
 POST /api/teams/{teamId}/join
 
@@ -440,6 +453,7 @@ POST /api/teams/{teamId}/join
 ### 🎨 Creator Program Endpoints
 
 #### Apply for Creator Program
+
 ```javascript
 POST /api/creator/apply
 
@@ -471,6 +485,7 @@ POST /api/creator/apply
 ```
 
 #### Discover Creators
+
 ```javascript
 GET /api/creator/discover?game=League%20of%20Legends&verified=true
 
@@ -503,6 +518,7 @@ GET /api/creator/discover?game=League%20of%20Legends&verified=true
 ```
 
 #### Follow Creator
+
 ```javascript
 POST /api/creator/{creatorId}/follow
 
@@ -519,6 +535,7 @@ POST /api/creator/{creatorId}/follow
 ### 💰 Virtual Currency Endpoints
 
 #### Get Coin Packages
+
 ```javascript
 GET /api/coins/packages
 
@@ -551,6 +568,7 @@ GET /api/coins/packages
 ```
 
 #### Purchase Coins
+
 ```javascript
 POST /api/coins/purchase
 
@@ -575,6 +593,7 @@ POST /api/coins/purchase
 ```
 
 #### Get Coin Balance
+
 ```javascript
 GET /api/coins/balance
 
@@ -591,6 +610,7 @@ GET /api/coins/balance
 ### 📰 News Endpoints
 
 #### Get Esports News
+
 ```javascript
 GET /api/news?category=League%20of%20Legends&limit=20
 
@@ -671,7 +691,11 @@ export default socket;
 ```javascript
 // hooks/useSocket.js
 import { useEffect } from 'react';
-import { connectSocket, disconnectSocket, onTournamentUpdate } from '../socket/socketConfig';
+import {
+  connectSocket,
+  disconnectSocket,
+  onTournamentUpdate,
+} from '../socket/socketConfig';
 import { useAuth } from '../contexts/AuthContext';
 
 export const useSocket = () => {
@@ -731,51 +755,51 @@ export const handleApiError = (error) => {
   if (error.response) {
     // Server responded with error status
     const { status, data } = error.response;
-    
+
     switch (status) {
       case 400:
         return {
           type: 'validation',
           message: data.message,
-          errors: data.errors || []
+          errors: data.errors || [],
         };
       case 401:
         return {
           type: 'auth',
-          message: 'Please log in to continue'
+          message: 'Please log in to continue',
         };
       case 403:
         return {
           type: 'permission',
-          message: data.message || 'Permission denied'
+          message: data.message || 'Permission denied',
         };
       case 404:
         return {
           type: 'notFound',
-          message: data.message || 'Resource not found'
+          message: data.message || 'Resource not found',
         };
       case 429:
         return {
           type: 'rateLimit',
-          message: 'Too many requests. Please try again later.'
+          message: 'Too many requests. Please try again later.',
         };
       default:
         return {
           type: 'server',
-          message: data.message || 'Server error occurred'
+          message: data.message || 'Server error occurred',
         };
     }
   } else if (error.request) {
     // Network error
     return {
       type: 'network',
-      message: 'Network error. Please check your connection.'
+      message: 'Network error. Please check your connection.',
     };
   } else {
     // Other error
     return {
       type: 'unknown',
-      message: 'An unexpected error occurred'
+      message: 'An unexpected error occurred',
     };
   }
 };
@@ -796,11 +820,11 @@ import { handleApiError } from '../utils/errorHandler';
 const LoginForm = () => {
   const [formData, setFormData] = useState({
     email: '',
-    password: ''
+    password: '',
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  
+
   const { login } = useAuth();
 
   const handleSubmit = async (e) => {
@@ -825,14 +849,14 @@ const LoginForm = () => {
         type="email"
         placeholder="Email"
         value={formData.email}
-        onChange={(e) => setFormData({...formData, email: e.target.value})}
+        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
         required
       />
       <input
         type="password"
         placeholder="Password"
         value={formData.password}
-        onChange={(e) => setFormData({...formData, password: e.target.value})}
+        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
         required
       />
       {error && <div className="error">{error}</div>}
@@ -857,7 +881,7 @@ const TournamentList = () => {
   const [filters, setFilters] = useState({
     game: '',
     status: '',
-    page: 1
+    page: 1,
   });
 
   useEffect(() => {
@@ -867,7 +891,7 @@ const TournamentList = () => {
   const fetchTournaments = async () => {
     try {
       const params = new URLSearchParams();
-      Object.keys(filters).forEach(key => {
+      Object.keys(filters).forEach((key) => {
         if (filters[key]) params.append(key, filters[key]);
       });
 
@@ -895,19 +919,19 @@ const TournamentList = () => {
   return (
     <div>
       <div className="filters">
-        <select 
+        <select
           value={filters.game}
-          onChange={(e) => setFilters({...filters, game: e.target.value})}
+          onChange={(e) => setFilters({ ...filters, game: e.target.value })}
         >
           <option value="">All Games</option>
           <option value="League of Legends">League of Legends</option>
           <option value="Valorant">Valorant</option>
           <option value="CS2">CS2</option>
         </select>
-        
-        <select 
+
+        <select
           value={filters.status}
-          onChange={(e) => setFilters({...filters, status: e.target.value})}
+          onChange={(e) => setFilters({ ...filters, status: e.target.value })}
         >
           <option value="">All Status</option>
           <option value="registration">Registration Open</option>
@@ -920,14 +944,17 @@ const TournamentList = () => {
         <div>Loading tournaments...</div>
       ) : (
         <div className="tournament-grid">
-          {tournaments.map(tournament => (
+          {tournaments.map((tournament) => (
             <div key={tournament._id} className="tournament-card">
               <h3>{tournament.name}</h3>
               <p>Game: {tournament.game}</p>
               <p>Entry Fee: {tournament.entryFee} coins</p>
-              <p>Participants: {tournament.currentParticipants}/{tournament.maxParticipants}</p>
+              <p>
+                Participants: {tournament.currentParticipants}/
+                {tournament.maxParticipants}
+              </p>
               <p>Status: {tournament.status}</p>
-              
+
               {tournament.isRegistrationOpen && (
                 <button onClick={() => joinTournament(tournament._id)}>
                   Join Tournament
@@ -954,7 +981,7 @@ const LinkRiotAccount = ({ onSuccess }) => {
     username: '',
     gameTag: '',
     game: 'League of Legends',
-    region: 'NA1'
+    region: 'NA1',
   });
   const [loading, setLoading] = useState(false);
 
@@ -965,7 +992,12 @@ const LinkRiotAccount = ({ onSuccess }) => {
     try {
       const response = await api.post('/gaming-accounts/link-riot', formData);
       onSuccess(response.data.data.gamingAccount);
-      setFormData({ username: '', gameTag: '', game: 'League of Legends', region: 'NA1' });
+      setFormData({
+        username: '',
+        gameTag: '',
+        game: 'League of Legends',
+        region: 'NA1',
+      });
     } catch (error) {
       alert(error.response?.data?.message || 'Failed to link account');
     } finally {
@@ -979,19 +1011,19 @@ const LinkRiotAccount = ({ onSuccess }) => {
         type="text"
         placeholder="Riot Username"
         value={formData.username}
-        onChange={(e) => setFormData({...formData, username: e.target.value})}
+        onChange={(e) => setFormData({ ...formData, username: e.target.value })}
         required
       />
       <input
         type="text"
         placeholder="Tag Line (e.g., 1234)"
         value={formData.gameTag}
-        onChange={(e) => setFormData({...formData, gameTag: e.target.value})}
+        onChange={(e) => setFormData({ ...formData, gameTag: e.target.value })}
         required
       />
       <select
         value={formData.game}
-        onChange={(e) => setFormData({...formData, game: e.target.value})}
+        onChange={(e) => setFormData({ ...formData, game: e.target.value })}
       >
         <option value="League of Legends">League of Legends</option>
         <option value="Valorant">Valorant</option>
@@ -999,7 +1031,7 @@ const LinkRiotAccount = ({ onSuccess }) => {
       </select>
       <select
         value={formData.region}
-        onChange={(e) => setFormData({...formData, region: e.target.value})}
+        onChange={(e) => setFormData({ ...formData, region: e.target.value })}
       >
         <option value="NA1">North America</option>
         <option value="EUW1">Europe West</option>
@@ -1044,7 +1076,7 @@ const authSlice = createSlice({
   initialState: {
     user: null,
     loading: false,
-    error: null
+    error: null,
   },
   reducers: {
     logout: (state) => {
@@ -1053,7 +1085,7 @@ const authSlice = createSlice({
     },
     clearError: (state) => {
       state.error = null;
-    }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -1069,7 +1101,7 @@ const authSlice = createSlice({
         state.loading = false;
         state.error = action.payload.message;
       });
-  }
+  },
 });
 
 export const { logout, clearError } = authSlice.actions;
@@ -1094,7 +1126,8 @@ const ProfilePictureUpload = () => {
     if (!file) return;
 
     // Validate file
-    if (file.size > 5 * 1024 * 1024) { // 5MB limit
+    if (file.size > 5 * 1024 * 1024) {
+      // 5MB limit
       alert('File size must be less than 5MB');
       return;
     }
@@ -1105,7 +1138,7 @@ const ProfilePictureUpload = () => {
     }
 
     setUploading(true);
-    
+
     const formData = new FormData();
     formData.append('avatar', file);
 
@@ -1155,6 +1188,7 @@ REACT_APP_STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable_key
 ## 🚀 Quick Integration Checklist
 
 ### ✅ Initial Setup
+
 - [ ] Install axios: `npm install axios`
 - [ ] Install socket.io-client: `npm install socket.io-client`
 - [ ] Create axios configuration with interceptors
@@ -1162,12 +1196,14 @@ REACT_APP_STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable_key
 - [ ] Configure environment variables
 
 ### ✅ Authentication Flow
+
 - [ ] Implement login/register forms
 - [ ] Set up protected routes
 - [ ] Handle token storage and refresh
 - [ ] Add logout functionality
 
 ### ✅ Core Features
+
 - [ ] Tournament browsing and joining
 - [ ] Gaming account linking
 - [ ] Team creation and management
@@ -1176,6 +1212,7 @@ REACT_APP_STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable_key
 - [ ] Real-time updates with Socket.io
 
 ### ✅ User Experience
+
 - [ ] Error handling and user feedback
 - [ ] Loading states for async operations
 - [ ] Form validation
@@ -1187,15 +1224,19 @@ REACT_APP_STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable_key
 ## 🆘 Common Issues & Solutions
 
 ### Issue: CORS Error
+
 **Solution**: Make sure backend has proper CORS configuration for your frontend URL
 
 ### Issue: 401 Unauthorized
+
 **Solution**: Check if JWT token is being sent in Authorization header
 
 ### Issue: Socket.io Connection Failed
+
 **Solution**: Verify socket.io server URL and authentication
 
 ### Issue: Payment Integration
+
 **Solution**: Ensure Stripe publishable key is correct and test mode is enabled
 
 ---
@@ -1203,6 +1244,7 @@ REACT_APP_STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable_key
 ## 📞 Support
 
 If you encounter any issues:
+
 1. Check the backend logs for detailed error messages
 2. Verify all environment variables are configured
 3. Ensure the backend server is running on http://localhost:5000

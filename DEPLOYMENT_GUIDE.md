@@ -5,9 +5,11 @@ This guide will show you how to deploy your Node.js backend API so your frontend
 ## Quick Start Options
 
 ### 1. 🆓 **Render.com (Recommended for beginners)**
+
 **Best for**: Free tier, easy setup, automatic deployments
 
 #### Setup Steps:
+
 1. **Push your code to GitHub** (if not already done)
 2. **Sign up at [render.com](https://render.com)**
 3. **Create a new Web Service**
@@ -29,10 +31,12 @@ This guide will show you how to deploy your Node.js backend API so your frontend
    ```
 5. **Deploy!** - Your API will be available at `https://your-app-name.onrender.com`
 
-### 2. ⚡ **Railway** 
+### 2. ⚡ **Railway**
+
 **Best for**: Simple deployment, great free tier
 
 #### Setup Steps:
+
 1. **Install Railway CLI**:
    ```bash
    npm install -g @railway/cli
@@ -47,9 +51,11 @@ This guide will show you how to deploy your Node.js backend API so your frontend
 4. **Your API**: `https://your-app.railway.app`
 
 ### 3. 🌐 **Vercel** (For Node.js APIs)
+
 **Best for**: Serverless deployment, great for APIs
 
 #### Setup Steps:
+
 1. **Install Vercel CLI**:
    ```bash
    npm install -g vercel
@@ -61,6 +67,7 @@ This guide will show you how to deploy your Node.js backend API so your frontend
 3. **Configure vercel.json** (already created below)
 
 ### 4. ☁️ **AWS/Heroku/DigitalOcean** (Production)
+
 **Best for**: Production apps with high traffic
 
 ---
@@ -68,6 +75,7 @@ This guide will show you how to deploy your Node.js backend API so your frontend
 ## 📁 Required Files for Deployment
 
 ### 1. vercel.json (for Vercel deployment)
+
 ```json
 {
   "version": 2,
@@ -90,6 +98,7 @@ This guide will show you how to deploy your Node.js backend API so your frontend
 ```
 
 ### 2. Dockerfile (for containerized deployment)
+
 ```dockerfile
 FROM node:18-alpine
 
@@ -108,6 +117,7 @@ CMD ["npm", "start"]
 ```
 
 ### 3. .dockerignore
+
 ```
 node_modules
 npm-debug.log
@@ -126,6 +136,7 @@ coverage
 ## 🔧 Pre-Deployment Checklist
 
 ### 1. **Database Setup (MongoDB Atlas)**
+
 ```bash
 # Sign up at https://www.mongodb.com/atlas
 # Create a cluster
@@ -134,6 +145,7 @@ coverage
 ```
 
 ### 2. **Environment Variables Setup**
+
 Create these variables in your deployment platform:
 
 ```env
@@ -160,6 +172,7 @@ PLATFORM_FEE_PERCENTAGE=30
 ```
 
 ### 3. **Update package.json scripts**
+
 ```json
 {
   "scripts": {
@@ -178,9 +191,11 @@ PLATFORM_FEE_PERCENTAGE=30
 Once deployed, update your frontend axios configuration:
 
 ### React Example:
+
 ```javascript
 // src/config/api.js
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://your-backend.onrender.com';
+const API_BASE_URL =
+  process.env.REACT_APP_API_URL || 'https://your-backend.onrender.com';
 
 export const api = axios.create({
   baseURL: `${API_BASE_URL}/api`,
@@ -200,6 +215,7 @@ api.interceptors.request.use((config) => {
 ```
 
 ### Environment Variables for Frontend:
+
 ```env
 # .env (for React)
 REACT_APP_API_URL=https://your-backend.onrender.com
@@ -211,6 +227,7 @@ REACT_APP_STRIPE_PUBLISHABLE_KEY=pk_test_or_live_key
 ## 🚀 Step-by-Step: Deploy to Render (Recommended)
 
 ### 1. **Prepare Your Repository**
+
 ```bash
 # Make sure your code is on GitHub
 git add .
@@ -219,6 +236,7 @@ git push origin main
 ```
 
 ### 2. **Deploy to Render**
+
 1. Go to [render.com](https://render.com)
 2. Sign up/Login with GitHub
 3. Click "New +" → "Web Service"
@@ -231,9 +249,11 @@ git push origin main
    - **Instance Type**: Free
 
 ### 3. **Add Environment Variables**
+
 In Render dashboard, add all the environment variables listed above.
 
 ### 4. **Deploy Database**
+
 1. In Render, create a new PostgreSQL database OR
 2. Use MongoDB Atlas (recommended)
    - Sign up at mongodb.com/atlas
@@ -242,6 +262,7 @@ In Render dashboard, add all the environment variables listed above.
    - Add to MONGODB_URI
 
 ### 5. **Test Your API**
+
 ```bash
 # Test deployment
 curl https://your-app.onrender.com/api/auth/health
@@ -252,6 +273,7 @@ curl https://your-app.onrender.com/api/auth/health
 ## 🔄 Continuous Deployment
 
 ### GitHub Actions (Auto-deploy on push)
+
 Create `.github/workflows/deploy.yml`:
 
 ```yaml
@@ -259,7 +281,7 @@ name: Deploy to Render
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   deploy:
@@ -276,19 +298,24 @@ jobs:
 ## 📊 Monitoring & Maintenance
 
 ### 1. **Health Check Endpoint**
+
 Your API already includes health checks at `/api/auth/health`
 
 ### 2. **Logging**
+
 Monitor logs in your deployment platform dashboard
 
 ### 3. **Database Monitoring**
+
 - MongoDB Atlas provides built-in monitoring
 - Set up alerts for connection issues
 
 ### 4. **API Monitoring**
+
 Consider tools like:
+
 - Pingdom
-- UptimeRobot  
+- UptimeRobot
 - New Relic
 
 ---
@@ -298,16 +325,19 @@ Consider tools like:
 ### Common Issues:
 
 1. **CORS Errors**:
+
    ```javascript
    // Make sure FRONTEND_URL is set correctly
-   origin: process.env.FRONTEND_URL || "http://localhost:3000"
+   origin: process.env.FRONTEND_URL || 'http://localhost:3000';
    ```
 
 2. **Environment Variables Not Loading**:
+
    - Check spelling in deployment platform
    - Restart your service after adding variables
 
 3. **Database Connection Fails**:
+
    - Verify MongoDB URI format
    - Check IP whitelist in MongoDB Atlas
 
@@ -316,6 +346,7 @@ Consider tools like:
    - Check route definitions in server.js
 
 ### Testing Your Deployed API:
+
 ```bash
 # Test endpoints
 curl https://your-backend.onrender.com/api/auth/health
@@ -328,12 +359,12 @@ curl -X POST https://your-backend.onrender.com/api/auth/register \
 
 ## 💰 Cost Breakdown
 
-| Platform | Free Tier | Paid Plans |
-|----------|-----------|------------|
-| **Render** | 750 hours/month | $7+/month |
-| **Railway** | $5 credit/month | $0.000463/GB-hour |
-| **Vercel** | 100GB bandwidth | $20+/month |
-| **Heroku** | Discontinued free tier | $7+/month |
+| Platform    | Free Tier              | Paid Plans        |
+| ----------- | ---------------------- | ----------------- |
+| **Render**  | 750 hours/month        | $7+/month         |
+| **Railway** | $5 credit/month        | $0.000463/GB-hour |
+| **Vercel**  | 100GB bandwidth        | $20+/month        |
+| **Heroku**  | Discontinued free tier | $7+/month         |
 
 ---
 
@@ -347,6 +378,7 @@ curl -X POST https://your-backend.onrender.com/api/auth/register \
 6. **Set up monitoring**
 
 Your backend will be accessible at:
+
 - **Render**: `https://your-app.onrender.com/api`
 - **Railway**: `https://your-app.railway.app/api`
 - **Vercel**: `https://your-app.vercel.app/api`
@@ -354,6 +386,7 @@ Your backend will be accessible at:
 ## 📞 Support
 
 If you encounter issues:
+
 1. Check deployment platform logs
 2. Verify environment variables
 3. Test API endpoints manually

@@ -18,20 +18,19 @@ router.get('/profile', auth, async (req, res) => {
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: 'User not found'
+        message: 'User not found',
       });
     }
 
     res.json({
       success: true,
-      data: { user }
+      data: { user },
     });
-
   } catch (error) {
     console.error('Get user profile error:', error);
     res.status(500).json({
       success: false,
-      message: 'Server error'
+      message: 'Server error',
     });
   }
 });
@@ -39,128 +38,134 @@ router.get('/profile', auth, async (req, res) => {
 // @route   PUT /api/users/profile
 // @desc    Update user profile
 // @access  Private
-router.put('/profile', auth, [
-  body('firstName')
-    .optional()
-    .trim()
-    .notEmpty()
-    .withMessage('First name cannot be empty'),
-  body('lastName')
-    .optional()
-    .trim()
-    .notEmpty()
-    .withMessage('Last name cannot be empty'),
-  body('username')
-    .optional()
-    .isLength({ min: 3, max: 30 })
-    .withMessage('Username must be between 3 and 30 characters')
-    .matches(/^[a-zA-Z0-9_]+$/)
-    .withMessage('Username can only contain letters, numbers, and underscores')
-], async (req, res) => {
-  try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({
-        success: false,
-        message: 'Validation errors',
-        errors: errors.array()
-      });
-    }
-
-    const userId = req.user.userId;
-    const updates = req.body;
-
-    // If username is being updated, check if it's available
-    if (updates.username) {
-      const existingUser = await User.findOne({ 
-        username: updates.username,
-        _id: { $ne: userId }
-      });
-
-      if (existingUser) {
+router.put(
+  '/profile',
+  auth,
+  [
+    body('firstName')
+      .optional()
+      .trim()
+      .notEmpty()
+      .withMessage('First name cannot be empty'),
+    body('lastName')
+      .optional()
+      .trim()
+      .notEmpty()
+      .withMessage('Last name cannot be empty'),
+    body('username')
+      .optional()
+      .isLength({ min: 3, max: 30 })
+      .withMessage('Username must be between 3 and 30 characters')
+      .matches(/^[a-zA-Z0-9_]+$/)
+      .withMessage(
+        'Username can only contain letters, numbers, and underscores'
+      ),
+  ],
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
         return res.status(400).json({
           success: false,
-          message: 'Username already taken'
+          message: 'Validation errors',
+          errors: errors.array(),
         });
       }
-    }
 
-    const user = await User.findByIdAndUpdate(
-      userId,
-      { $set: updates },
-      { new: true, runValidators: true }
-    ).select('-password');
+      const userId = req.user.userId;
+      const updates = req.body;
 
-    if (!user) {
-      return res.status(404).json({
+      // If username is being updated, check if it's available
+      if (updates.username) {
+        const existingUser = await User.findOne({
+          username: updates.username,
+          _id: { $ne: userId },
+        });
+
+        if (existingUser) {
+          return res.status(400).json({
+            success: false,
+            message: 'Username already taken',
+          });
+        }
+      }
+
+      const user = await User.findByIdAndUpdate(
+        userId,
+        { $set: updates },
+        { new: true, runValidators: true }
+      ).select('-password');
+
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: 'User not found',
+        });
+      }
+
+      res.json({
+        success: true,
+        message: 'Profile updated successfully',
+        data: { user },
+      });
+    } catch (error) {
+      console.error('Update user profile error:', error);
+      res.status(500).json({
         success: false,
-        message: 'User not found'
+        message: 'Server error',
       });
     }
-
-    res.json({
-      success: true,
-      message: 'Profile updated successfully',
-      data: { user }
-    });
-
-  } catch (error) {
-    console.error('Update user profile error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Server error'
-    });
   }
-});
+);
 
 // @route   PUT /api/users/preferences
 // @desc    Update user preferences
 // @access  Private
-router.put('/preferences', auth, [
-  body('preferences')
-    .isObject()
-    .withMessage('Preferences must be an object')
-], async (req, res) => {
-  try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({
+router.put(
+  '/preferences',
+  auth,
+  [body('preferences').isObject().withMessage('Preferences must be an object')],
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({
+          success: false,
+          message: 'Validation errors',
+          errors: errors.array(),
+        });
+      }
+
+      const userId = req.user.userId;
+      const { preferences } = req.body;
+
+      const user = await User.findByIdAndUpdate(
+        userId,
+        { $set: { preferences } },
+        { new: true, runValidators: true }
+      ).select('-password');
+
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: 'User not found',
+        });
+      }
+
+      res.json({
+        success: true,
+        message: 'Preferences updated successfully',
+        data: { preferences: user.preferences },
+      });
+    } catch (error) {
+      console.error('Update preferences error:', error);
+      res.status(500).json({
         success: false,
-        message: 'Validation errors',
-        errors: errors.array()
+        message: 'Server error',
       });
     }
-
-    const userId = req.user.userId;
-    const { preferences } = req.body;
-
-    const user = await User.findByIdAndUpdate(
-      userId,
-      { $set: { preferences } },
-      { new: true, runValidators: true }
-    ).select('-password');
-
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: 'User not found'
-      });
-    }
-
-    res.json({
-      success: true,
-      message: 'Preferences updated successfully',
-      data: { preferences: user.preferences }
-    });
-
-  } catch (error) {
-    console.error('Update preferences error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Server error'
-    });
   }
-});
+);
 
 // @route   GET /api/users/stats
 // @desc    Get user statistics
@@ -175,7 +180,7 @@ router.get('/stats', auth, async (req, res) => {
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: 'User not found'
+        message: 'User not found',
       });
     }
 
@@ -183,30 +188,29 @@ router.get('/stats', auth, async (req, res) => {
       tournaments: {
         participated: user.stats.totalTournaments,
         won: user.stats.tournamentsWon,
-        winRate: user.stats.winRate
+        winRate: user.stats.winRate,
       },
       earnings: {
         total: user.stats.totalEarnings,
-        coins: user.coins
+        coins: user.coins,
       },
       account: {
         memberSince: user.createdAt,
         lastActive: user.lastActive,
         accountType: user.accountType,
-        isVerified: user.isVerified
-      }
+        isVerified: user.isVerified,
+      },
     };
 
     res.json({
       success: true,
-      data: { stats }
+      data: { stats },
     });
-
   } catch (error) {
     console.error('Get user stats error:', error);
     res.status(500).json({
       success: false,
-      message: 'Server error'
+      message: 'Server error',
     });
   }
 });
@@ -221,7 +225,7 @@ router.get('/search', async (req, res) => {
     if (!q || q.trim().length < 2) {
       return res.status(400).json({
         success: false,
-        message: 'Search query must be at least 2 characters'
+        message: 'Search query must be at least 2 characters',
       });
     }
 
@@ -229,22 +233,21 @@ router.get('/search', async (req, res) => {
       $or: [
         { username: { $regex: q, $options: 'i' } },
         { firstName: { $regex: q, $options: 'i' } },
-        { lastName: { $regex: q, $options: 'i' } }
-      ]
+        { lastName: { $regex: q, $options: 'i' } },
+      ],
     })
-    .select('username firstName lastName avatar accountType isVerified')
-    .limit(parseInt(limit));
+      .select('username firstName lastName avatar accountType isVerified')
+      .limit(parseInt(limit));
 
     res.json({
       success: true,
-      data: { users }
+      data: { users },
     });
-
   } catch (error) {
     console.error('Search users error:', error);
     res.status(500).json({
       success: false,
-      message: 'Server error'
+      message: 'Server error',
     });
   }
 });
@@ -263,7 +266,7 @@ router.get('/:id', async (req, res) => {
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: 'User not found'
+        message: 'User not found',
       });
     }
 
@@ -276,7 +279,7 @@ router.get('/:id', async (req, res) => {
       accountType: user.accountType,
       isVerified: user.isVerified,
       memberSince: user.createdAt,
-      lastActive: user.lastActive
+      lastActive: user.lastActive,
     };
 
     // Include stats if user allows it
@@ -291,20 +294,22 @@ router.get('/:id', async (req, res) => {
     }
 
     // Include creator profile if exists and public
-    if (user.creatorProfile && user.creatorProfile.settings?.publicProfile !== false) {
+    if (
+      user.creatorProfile &&
+      user.creatorProfile.settings?.publicProfile !== false
+    ) {
       responseData.creatorProfile = user.creatorProfile;
     }
 
     res.json({
       success: true,
-      data: { user: responseData }
+      data: { user: responseData },
     });
-
   } catch (error) {
     console.error('Get user by ID error:', error);
     res.status(500).json({
       success: false,
-      message: 'Server error'
+      message: 'Server error',
     });
   }
 });
@@ -326,14 +331,13 @@ router.delete('/account', auth, async (req, res) => {
 
     res.json({
       success: true,
-      message: 'Account deleted successfully'
+      message: 'Account deleted successfully',
     });
-
   } catch (error) {
     console.error('Delete account error:', error);
     res.status(500).json({
       success: false,
-      message: 'Server error'
+      message: 'Server error',
     });
   }
 });

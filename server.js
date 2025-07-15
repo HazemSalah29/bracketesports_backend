@@ -21,10 +21,13 @@ const gamingAccountRoutes = require('./routes/gamingAccounts');
 const newsRoutes = require('./routes/news');
 const coinsRoutes = require('./routes/coins');
 const creatorRoutes = require('./routes/creator');
+const riotApiRoutes = require('./routes/riotApi'); // NEW: Secure Riot API proxy
+const complianceRoutes = require('./routes/compliance'); // NEW: Compliance monitoring
 
 // Import middleware
 const errorHandler = require('./middleware/errorHandler');
 const logger = require('./utils/logger');
+const complianceMonitor = require('./utils/complianceMonitor'); // NEW: Compliance monitoring
 
 const app = express();
 const server = createServer(app);
@@ -120,6 +123,8 @@ app.use('/api/gaming-accounts', gamingAccountRoutes);
 app.use('/api/news', newsRoutes);
 app.use('/api/coins', coinsRoutes);
 app.use('/api/creator', creatorRoutes);
+app.use('/api/riot', riotApiRoutes); // NEW: Secure Riot API endpoints
+app.use('/api/compliance', complianceRoutes); // NEW: Compliance monitoring
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
@@ -162,6 +167,12 @@ process.on('SIGINT', () => {
 
 server.listen(PORT, '0.0.0.0', () => {
   logger.info(`Server running on port ${PORT} in ${process.env.NODE_ENV || 'development'} mode`);
+  
+  // Start compliance monitoring in production
+  if (process.env.NODE_ENV === 'production') {
+    complianceMonitor.start();
+    logger.info('Compliance monitoring started');
+  }
 });
 
 module.exports = app;

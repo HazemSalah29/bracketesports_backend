@@ -3,6 +3,7 @@
 Before deploying your Bracketesport backend, make sure you complete these steps:
 
 ## ✅ Code Preparation
+
 - [ ] All code is committed to Git
 - [ ] No sensitive data (API keys, passwords) in code
 - [ ] All routes tested locally
@@ -10,6 +11,7 @@ Before deploying your Bracketesport backend, make sure you complete these steps:
 - [ ] CORS configured properly
 
 ## ✅ Database Setup
+
 - [ ] MongoDB Atlas account created
 - [ ] Database cluster created
 - [ ] Database user created with appropriate permissions
@@ -17,6 +19,7 @@ Before deploying your Bracketesport backend, make sure you complete these steps:
 - [ ] Connection string obtained
 
 ## ✅ API Keys & Services
+
 - [ ] Stripe account setup (for payments)
   - [ ] Secret key obtained
   - [ ] Webhook endpoint configured
@@ -26,7 +29,9 @@ Before deploying your Bracketesport backend, make sure you complete these steps:
 - [ ] JWT secret generated (32+ characters)
 
 ## ✅ Environment Variables
+
 Copy from `.env.production.template` and fill in:
+
 - [ ] `NODE_ENV=production`
 - [ ] `MONGODB_URI=your_connection_string`
 - [ ] `JWT_SECRET=your_secret_key`
@@ -37,7 +42,9 @@ Copy from `.env.production.template` and fill in:
 - [ ] `FRONTEND_URL=https://your-frontend-domain.com`
 
 ## ✅ Deployment Platform Choice
+
 Choose one:
+
 - [ ] **Render.com** (Recommended for beginners)
 - [ ] **Railway** (Great developer experience)
 - [ ] **Vercel** (Serverless functions)
@@ -46,6 +53,7 @@ Choose one:
 ## ✅ Platform-Specific Setup
 
 ### For Render.com:
+
 - [ ] GitHub repository connected
 - [ ] Build command: `npm install`
 - [ ] Start command: `npm start`
@@ -53,16 +61,19 @@ Choose one:
 - [ ] Auto-deploy enabled
 
 ### For Railway:
+
 - [ ] Railway CLI installed: `npm install -g @railway/cli`
 - [ ] Railway account created
 - [ ] Project initialized: `railway init`
 
 ### For Vercel:
+
 - [ ] Vercel CLI installed: `npm install -g vercel`
 - [ ] `vercel.json` configuration file present
 - [ ] Serverless functions configured
 
 ## ✅ Post-Deployment Testing
+
 - [ ] Health check endpoint working: `GET /api/health`
 - [ ] Authentication endpoints working
 - [ ] Database connection successful
@@ -70,18 +81,21 @@ Choose one:
 - [ ] API accessible from frontend domain
 
 ## ✅ Frontend Integration
+
 - [ ] Frontend API URL updated to production
 - [ ] CORS origin matches frontend domain
 - [ ] Authentication flow tested
 - [ ] All API endpoints tested from frontend
 
 ## ✅ Monitoring & Maintenance
+
 - [ ] Error logging configured
 - [ ] Database monitoring setup
 - [ ] API uptime monitoring
 - [ ] SSL certificate active (handled by platform)
 
 ## 🚨 Security Checklist
+
 - [ ] Environment variables secure
 - [ ] Rate limiting enabled
 - [ ] Helmet security headers active
@@ -90,6 +104,7 @@ Choose one:
 - [ ] HTTPS enabled (automatic on most platforms)
 
 ## 📞 Emergency Contacts
+
 - **Platform Support**: Check your chosen platform's documentation
 - **Database Issues**: MongoDB Atlas support
 - **Payment Issues**: Stripe support
@@ -100,10 +115,12 @@ Choose one:
 ## 🏁 Deployment Commands
 
 ### Quick Deploy (Render):
+
 1. `git push origin main`
 2. Go to render.com → Connect repo → Deploy
 
 ### Quick Deploy (Railway):
+
 ```bash
 railway login
 railway init
@@ -111,11 +128,13 @@ railway up
 ```
 
 ### Quick Deploy (Vercel):
+
 ```bash
 vercel
 ```
 
 ### Test Locally:
+
 ```bash
 npm run dev
 ```

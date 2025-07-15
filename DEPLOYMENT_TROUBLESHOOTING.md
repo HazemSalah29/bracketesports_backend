@@ -3,6 +3,7 @@
 ## Current Error: npm error signal SIGTERM
 
 ### 🔍 What This Error Means:
+
 - `SIGTERM` = Process termination signal
 - Usually means the app took too long to start or crashed during startup
 - Common on Render's free tier due to resource limitations
@@ -10,6 +11,7 @@
 ## 🛠️ Quick Fixes to Try:
 
 ### 1. **Check Environment Variables in Render**
+
 Go to your Render dashboard and verify these are set:
 
 ```
@@ -21,22 +23,27 @@ FRONTEND_URL=https://bracketesports.vercel.app
 ```
 
 ### 2. **Update Build Command in Render**
+
 In your Render service settings:
+
 - **Build Command**: `npm install`
 - **Start Command**: `npm start`
 
 ### 3. **Check MongoDB Atlas Network Access**
+
 1. Go to MongoDB Atlas dashboard
 2. Navigate to "Network Access"
 3. Ensure `0.0.0.0/0` is whitelisted (allows access from anywhere)
 
 ### 4. **Verify Database User Permissions**
+
 1. Go to "Database Access" in MongoDB Atlas
 2. Ensure user `bracketesports_admin` has "Read and write to any database" permissions
 
 ## 🔄 Step-by-Step Fix Process:
 
 ### Step 1: Update Your Code
+
 ```bash
 # In your local terminal
 git add .
@@ -45,11 +52,13 @@ git push origin main
 ```
 
 ### Step 2: Trigger Manual Deploy in Render
+
 1. Go to your Render dashboard
 2. Click on "bracketesports-backend" service
 3. Click "Manual Deploy" → "Deploy latest commit"
 
 ### Step 3: Monitor Deployment Logs
+
 1. Go to "Logs" tab in Render
 2. Watch for these success messages:
    - "MongoDB connected successfully"
@@ -58,23 +67,29 @@ git push origin main
 ## 🧪 Test Deployment Success:
 
 ### Test 1: Health Check
+
 ```bash
 curl https://bracketesports-backend.onrender.com/api/health
 ```
+
 **Expected Response:**
+
 ```json
-{"status":"OK","timestamp":"...","environment":"production"}
+{ "status": "OK", "timestamp": "...", "environment": "production" }
 ```
 
 ### Test 2: CORS Check
+
 ```bash
 curl -H "Origin: https://bracketesports.vercel.app" https://bracketesports-backend.onrender.com/api/health
 ```
+
 **Should include CORS headers**
 
 ## 🚨 If Still Failing:
 
 ### Check Logs for Specific Errors:
+
 1. MongoDB connection timeout
 2. Missing environment variables
 3. Port binding issues
@@ -83,20 +98,24 @@ curl -H "Origin: https://bracketesports.vercel.app" https://bracketesports-backe
 ### Common Error Messages & Solutions:
 
 #### "MongoNetworkTimeoutError"
+
 - **Cause**: Can't connect to MongoDB
 - **Fix**: Check MONGODB_URI and network access
 
 #### "EADDRINUSE"
+
 - **Cause**: Port already in use
 - **Fix**: Render should handle this automatically
 
 #### "Cannot read property of undefined"
+
 - **Cause**: Missing environment variables
 - **Fix**: Add all required environment variables
 
 ## 🔧 Alternative Deployment Options:
 
 ### Option 1: Railway (Often More Stable)
+
 ```bash
 npm install -g @railway/cli
 railway login
@@ -105,6 +124,7 @@ railway up
 ```
 
 ### Option 2: Heroku
+
 ```bash
 # Create Procfile
 echo "web: npm start" > Procfile
@@ -121,6 +141,7 @@ git push heroku main
 ## 📞 Last Resort Debugging:
 
 ### Add Debug Logging:
+
 Add this to your server.js to see what's failing:
 
 ```javascript
@@ -134,6 +155,7 @@ console.log('JWT Secret exists:', !!process.env.JWT_SECRET);
 ## ✅ Success Indicators:
 
 Your deployment is working when you see:
+
 1. ✅ Build completes without errors
 2. ✅ Health endpoint returns 200 status
 3. ✅ MongoDB connection successful in logs

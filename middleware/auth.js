@@ -5,11 +5,11 @@ const auth = async (req, res, next) => {
   try {
     // Get token from header
     const authHeader = req.header('Authorization');
-    
+
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return res.status(401).json({
         success: false,
-        message: 'No token provided, authorization denied'
+        message: 'No token provided, authorization denied',
       });
     }
 
@@ -18,20 +18,20 @@ const auth = async (req, res, next) => {
 
     // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    
+
     // Check if user still exists
     const user = await User.findById(decoded.userId);
     if (!user) {
       return res.status(401).json({
         success: false,
-        message: 'User no longer exists'
+        message: 'User no longer exists',
       });
     }
 
     // Add user info to request
     req.user = {
       userId: decoded.userId,
-      user: user
+      user: user,
     };
 
     next();
@@ -39,21 +39,21 @@ const auth = async (req, res, next) => {
     if (error.name === 'JsonWebTokenError') {
       return res.status(401).json({
         success: false,
-        message: 'Invalid token'
+        message: 'Invalid token',
       });
     }
-    
+
     if (error.name === 'TokenExpiredError') {
       return res.status(401).json({
         success: false,
-        message: 'Token has expired'
+        message: 'Token has expired',
       });
     }
 
     console.error('Auth middleware error:', error);
     res.status(500).json({
       success: false,
-      message: 'Server error in authentication'
+      message: 'Server error in authentication',
     });
   }
 };

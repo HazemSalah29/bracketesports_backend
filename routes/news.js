@@ -12,8 +12,8 @@ const NEWS_SOURCES = {
       q: 'esports OR "League of Legends" OR "Valorant" OR "CS2" OR "Counter Strike" OR "Fortnite" OR "Overwatch" OR "Dota 2"',
       language: 'en',
       sortBy: 'publishedAt',
-      pageSize: 20
-    }
+      pageSize: 20,
+    },
   },
   RIOT_GAMES: {
     name: 'Riot Games News',
@@ -22,8 +22,8 @@ const NEWS_SOURCES = {
       q: '"Riot Games" OR "League of Legends esports" OR "Valorant esports" OR "LCS" OR "LEC" OR "Worlds"',
       language: 'en',
       sortBy: 'publishedAt',
-      pageSize: 15
-    }
+      pageSize: 15,
+    },
   },
   GENERAL_GAMING: {
     name: 'Gaming News',
@@ -32,16 +32,16 @@ const NEWS_SOURCES = {
       q: 'gaming tournament OR esports championship OR gaming competition',
       language: 'en',
       sortBy: 'publishedAt',
-      pageSize: 10
-    }
-  }
+      pageSize: 10,
+    },
+  },
 };
 
 // Cache for news articles
 let newsCache = {
   data: null,
   lastUpdated: null,
-  expiry: 30 * 60 * 1000 // 30 minutes
+  expiry: 30 * 60 * 1000, // 30 minutes
 };
 
 // Helper function to fetch news from external APIs
@@ -50,11 +50,11 @@ async function fetchNewsFromSource(source, apiKey) {
     const response = await axios.get(source.url, {
       params: {
         ...source.params,
-        apiKey: apiKey
+        apiKey: apiKey,
       },
-      timeout: 10000
+      timeout: 10000,
     });
-    
+
     return response.data.articles || [];
   } catch (error) {
     console.error(`Error fetching from ${source.name}:`, error.message);
@@ -74,26 +74,30 @@ function formatNewsArticle(article, source) {
     publishedAt: article.publishedAt,
     source: {
       name: article.source?.name || source,
-      url: article.url
+      url: article.url,
     },
     author: article.author,
-    category: determineCategory(article.title + ' ' + article.description)
+    category: determineCategory(article.title + ' ' + article.description),
   };
 }
 
 // Helper function to determine article category
 function determineCategory(text) {
   const lowerText = text.toLowerCase();
-  
-  if (lowerText.includes('league of legends') || lowerText.includes('lol')) return 'League of Legends';
+
+  if (lowerText.includes('league of legends') || lowerText.includes('lol'))
+    return 'League of Legends';
   if (lowerText.includes('valorant')) return 'Valorant';
-  if (lowerText.includes('cs2') || lowerText.includes('counter-strike')) return 'CS2';
+  if (lowerText.includes('cs2') || lowerText.includes('counter-strike'))
+    return 'CS2';
   if (lowerText.includes('fortnite')) return 'Fortnite';
   if (lowerText.includes('overwatch')) return 'Overwatch 2';
   if (lowerText.includes('dota')) return 'Dota 2';
-  if (lowerText.includes('tournament') || lowerText.includes('championship')) return 'Tournaments';
-  if (lowerText.includes('esports') || lowerText.includes('e-sports')) return 'Esports';
-  
+  if (lowerText.includes('tournament') || lowerText.includes('championship'))
+    return 'Tournaments';
+  if (lowerText.includes('esports') || lowerText.includes('e-sports'))
+    return 'Esports';
+
   return 'Gaming';
 }
 
@@ -102,33 +106,31 @@ function determineCategory(text) {
 // @access  Public
 router.get('/', async (req, res) => {
   try {
-    const {
-      category,
-      game,
-      limit = 20,
-      page = 1,
-      fresh = false
-    } = req.query;
+    const { category, game, limit = 20, page = 1, fresh = false } = req.query;
 
     // Check cache if not requesting fresh data
     const now = Date.now();
-    if (!fresh && newsCache.data && newsCache.lastUpdated && 
-        (now - newsCache.lastUpdated) < newsCache.expiry) {
-      
+    if (
+      !fresh &&
+      newsCache.data &&
+      newsCache.lastUpdated &&
+      now - newsCache.lastUpdated < newsCache.expiry
+    ) {
       let articles = newsCache.data;
-      
+
       // Apply filters
       if (category && category !== 'all') {
-        articles = articles.filter(article => 
-          article.category.toLowerCase() === category.toLowerCase()
+        articles = articles.filter(
+          (article) => article.category.toLowerCase() === category.toLowerCase()
         );
       }
-      
+
       if (game && game !== 'all') {
-        articles = articles.filter(article => 
-          article.category.toLowerCase() === game.toLowerCase() ||
-          article.title.toLowerCase().includes(game.toLowerCase()) ||
-          article.description?.toLowerCase().includes(game.toLowerCase())
+        articles = articles.filter(
+          (article) =>
+            article.category.toLowerCase() === game.toLowerCase() ||
+            article.title.toLowerCase().includes(game.toLowerCase()) ||
+            article.description?.toLowerCase().includes(game.toLowerCase())
         );
       }
 
@@ -145,11 +147,11 @@ router.get('/', async (req, res) => {
             current: parseInt(page),
             total: Math.ceil(articles.length / parseInt(limit)),
             count: articles.length,
-            limit: parseInt(limit)
+            limit: parseInt(limit),
           },
           cached: true,
-          lastUpdated: new Date(newsCache.lastUpdated).toISOString()
-        }
+          lastUpdated: new Date(newsCache.lastUpdated).toISOString(),
+        },
       });
     }
 
@@ -158,23 +160,23 @@ router.get('/', async (req, res) => {
     if (!apiKey) {
       return res.status(500).json({
         success: false,
-        message: 'News API key not configured'
+        message: 'News API key not configured',
       });
     }
 
     // Fetch from multiple sources
-    const newsPromises = Object.entries(NEWS_SOURCES).map(([key, source]) => 
+    const newsPromises = Object.entries(NEWS_SOURCES).map(([key, source]) =>
       fetchNewsFromSource(source, apiKey)
     );
 
     const newsResults = await Promise.allSettled(newsPromises);
-    
+
     // Combine and format articles
     let allArticles = [];
     newsResults.forEach((result, index) => {
       if (result.status === 'fulfilled') {
         const sourceName = Object.keys(NEWS_SOURCES)[index];
-        const formattedArticles = result.value.map(article => 
+        const formattedArticles = result.value.map((article) =>
           formatNewsArticle(article, sourceName)
         );
         allArticles = allArticles.concat(formattedArticles);
@@ -182,34 +184,38 @@ router.get('/', async (req, res) => {
     });
 
     // Remove duplicates based on URL
-    const uniqueArticles = allArticles.filter((article, index, self) => 
-      index === self.findIndex(a => a.url === article.url)
+    const uniqueArticles = allArticles.filter(
+      (article, index, self) =>
+        index === self.findIndex((a) => a.url === article.url)
     );
 
     // Sort by published date
-    uniqueArticles.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
+    uniqueArticles.sort(
+      (a, b) => new Date(b.publishedAt) - new Date(a.publishedAt)
+    );
 
     // Update cache
     newsCache = {
       data: uniqueArticles,
       lastUpdated: now,
-      expiry: 30 * 60 * 1000
+      expiry: 30 * 60 * 1000,
     };
 
     // Apply filters
     let filteredArticles = uniqueArticles;
-    
+
     if (category && category !== 'all') {
-      filteredArticles = filteredArticles.filter(article => 
-        article.category.toLowerCase() === category.toLowerCase()
+      filteredArticles = filteredArticles.filter(
+        (article) => article.category.toLowerCase() === category.toLowerCase()
       );
     }
-    
+
     if (game && game !== 'all') {
-      filteredArticles = filteredArticles.filter(article => 
-        article.category.toLowerCase() === game.toLowerCase() ||
-        article.title.toLowerCase().includes(game.toLowerCase()) ||
-        article.description?.toLowerCase().includes(game.toLowerCase())
+      filteredArticles = filteredArticles.filter(
+        (article) =>
+          article.category.toLowerCase() === game.toLowerCase() ||
+          article.title.toLowerCase().includes(game.toLowerCase()) ||
+          article.description?.toLowerCase().includes(game.toLowerCase())
       );
     }
 
@@ -226,18 +232,17 @@ router.get('/', async (req, res) => {
           current: parseInt(page),
           total: Math.ceil(filteredArticles.length / parseInt(limit)),
           count: filteredArticles.length,
-          limit: parseInt(limit)
+          limit: parseInt(limit),
         },
         cached: false,
-        lastUpdated: new Date().toISOString()
-      }
+        lastUpdated: new Date().toISOString(),
+      },
     });
-
   } catch (error) {
     console.error('Get news error:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch news'
+      message: 'Failed to fetch news',
     });
   }
 });
@@ -251,25 +256,24 @@ router.get('/categories', (req, res) => {
       'All',
       'Esports',
       'League of Legends',
-      'Valorant', 
+      'Valorant',
       'CS2',
       'Fortnite',
       'Overwatch 2',
       'Dota 2',
       'Tournaments',
-      'Gaming'
+      'Gaming',
     ];
 
     res.json({
       success: true,
-      data: { categories }
+      data: { categories },
     });
-
   } catch (error) {
     console.error('Get categories error:', error);
     res.status(500).json({
       success: false,
-      message: 'Server error'
+      message: 'Server error',
     });
   }
 });
@@ -280,14 +284,14 @@ router.get('/categories', (req, res) => {
 router.get('/:id', async (req, res) => {
   try {
     const articleId = req.params.id;
-    
+
     // Check cache first
     if (newsCache.data) {
-      const article = newsCache.data.find(a => a.id === articleId);
+      const article = newsCache.data.find((a) => a.id === articleId);
       if (article) {
         return res.json({
           success: true,
-          data: { article }
+          data: { article },
         });
       }
     }
@@ -295,14 +299,14 @@ router.get('/:id', async (req, res) => {
     // If not in cache, try to decode the URL and fetch
     try {
       const articleUrl = Buffer.from(articleId, 'base64').toString();
-      
+
       // Find article by URL in cache
       if (newsCache.data) {
-        const article = newsCache.data.find(a => a.url === articleUrl);
+        const article = newsCache.data.find((a) => a.url === articleUrl);
         if (article) {
           return res.json({
             success: true,
-            data: { article }
+            data: { article },
           });
         }
       }
@@ -312,14 +316,13 @@ router.get('/:id', async (req, res) => {
 
     res.status(404).json({
       success: false,
-      message: 'Article not found'
+      message: 'Article not found',
     });
-
   } catch (error) {
     console.error('Get article error:', error);
     res.status(500).json({
       success: false,
-      message: 'Server error'
+      message: 'Server error',
     });
   }
 });
@@ -333,7 +336,7 @@ router.post('/refresh', auth, async (req, res) => {
     newsCache = {
       data: null,
       lastUpdated: null,
-      expiry: 30 * 60 * 1000
+      expiry: 30 * 60 * 1000,
     };
 
     // Fetch fresh data by calling the main endpoint
@@ -341,38 +344,41 @@ router.post('/refresh', auth, async (req, res) => {
     if (!apiKey) {
       return res.status(500).json({
         success: false,
-        message: 'News API key not configured'
+        message: 'News API key not configured',
       });
     }
 
-    const newsPromises = Object.entries(NEWS_SOURCES).map(([key, source]) => 
+    const newsPromises = Object.entries(NEWS_SOURCES).map(([key, source]) =>
       fetchNewsFromSource(source, apiKey)
     );
 
     const newsResults = await Promise.allSettled(newsPromises);
-    
+
     let allArticles = [];
     newsResults.forEach((result, index) => {
       if (result.status === 'fulfilled') {
         const sourceName = Object.keys(NEWS_SOURCES)[index];
-        const formattedArticles = result.value.map(article => 
+        const formattedArticles = result.value.map((article) =>
           formatNewsArticle(article, sourceName)
         );
         allArticles = allArticles.concat(formattedArticles);
       }
     });
 
-    const uniqueArticles = allArticles.filter((article, index, self) => 
-      index === self.findIndex(a => a.url === article.url)
+    const uniqueArticles = allArticles.filter(
+      (article, index, self) =>
+        index === self.findIndex((a) => a.url === article.url)
     );
 
-    uniqueArticles.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
+    uniqueArticles.sort(
+      (a, b) => new Date(b.publishedAt) - new Date(a.publishedAt)
+    );
 
     // Update cache
     newsCache = {
       data: uniqueArticles,
       lastUpdated: Date.now(),
-      expiry: 30 * 60 * 1000
+      expiry: 30 * 60 * 1000,
     };
 
     res.json({
@@ -380,15 +386,14 @@ router.post('/refresh', auth, async (req, res) => {
       message: 'News cache refreshed successfully',
       data: {
         articlesCount: uniqueArticles.length,
-        lastUpdated: new Date().toISOString()
-      }
+        lastUpdated: new Date().toISOString(),
+      },
     });
-
   } catch (error) {
     console.error('Refresh news error:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to refresh news'
+      message: 'Failed to refresh news',
     });
   }
 });
@@ -401,21 +406,33 @@ router.get('/trending/topics', (req, res) => {
     if (!newsCache.data) {
       return res.json({
         success: true,
-        data: { topics: [] }
+        data: { topics: [] },
       });
     }
 
     // Extract trending topics from news titles and descriptions
     const topicCounts = {};
     const keywords = [
-      'tournament', 'championship', 'worlds', 'playoffs', 'finals',
-      'league of legends', 'valorant', 'cs2', 'fortnite', 'overwatch',
-      'esports', 'gaming', 'competition', 'team', 'player'
+      'tournament',
+      'championship',
+      'worlds',
+      'playoffs',
+      'finals',
+      'league of legends',
+      'valorant',
+      'cs2',
+      'fortnite',
+      'overwatch',
+      'esports',
+      'gaming',
+      'competition',
+      'team',
+      'player',
     ];
 
-    newsCache.data.forEach(article => {
+    newsCache.data.forEach((article) => {
       const text = (article.title + ' ' + article.description).toLowerCase();
-      keywords.forEach(keyword => {
+      keywords.forEach((keyword) => {
         if (text.includes(keyword)) {
           topicCounts[keyword] = (topicCounts[keyword] || 0) + 1;
         }
@@ -424,26 +441,27 @@ router.get('/trending/topics', (req, res) => {
 
     // Sort topics by frequency
     const trendingTopics = Object.entries(topicCounts)
-      .sort(([,a], [,b]) => b - a)
+      .sort(([, a], [, b]) => b - a)
       .slice(0, 10)
       .map(([topic, count]) => ({
         topic: topic.charAt(0).toUpperCase() + topic.slice(1),
         count,
-        articles: newsCache.data.filter(article => 
-          (article.title + ' ' + article.description).toLowerCase().includes(topic)
-        ).length
+        articles: newsCache.data.filter((article) =>
+          (article.title + ' ' + article.description)
+            .toLowerCase()
+            .includes(topic)
+        ).length,
       }));
 
     res.json({
       success: true,
-      data: { topics: trendingTopics }
+      data: { topics: trendingTopics },
     });
-
   } catch (error) {
     console.error('Get trending topics error:', error);
     res.status(500).json({
       success: false,
-      message: 'Server error'
+      message: 'Server error',
     });
   }
 });
