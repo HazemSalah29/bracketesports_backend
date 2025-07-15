@@ -2,9 +2,10 @@
 
 ## 🚀 Quick Start
 
-**Base URL**: `http://localhost:5000/api`  
+**Base URL**: `https://bracketesports-backend.onrender.com/api`  
 **Authentication**: JWT Bearer token in Authorization header  
-**Content-Type**: `application/json`
+**Content-Type**: `application/json`  
+**Frontend URL**: `https://bracketesports.vercel.app`
 
 ## 📋 Table of Contents
 
@@ -28,7 +29,7 @@ Create an axios instance with interceptors:
 // api/axiosConfig.js
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = 'https://bracketesports-backend.onrender.com/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,

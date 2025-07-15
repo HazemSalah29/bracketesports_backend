@@ -79,9 +79,17 @@ app.use(morgan('combined', { stream: { write: message => logger.info(message.tri
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/bracketesport', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
+  serverSelectionTimeoutMS: 30000, // 30 second timeout
+  socketTimeoutMS: 45000, // 45 second timeout
+  maxPoolSize: 10, // Maximum 10 connections
+  retryWrites: true,
+  w: 'majority'
 })
 .then(() => logger.info('MongoDB connected successfully'))
-.catch(err => logger.error('MongoDB connection error:', err));
+.catch(err => {
+  logger.error('MongoDB connection error:', err);
+  process.exit(1);
+});
 
 // Socket.io for real-time updates
 io.on('connection', (socket) => {
@@ -135,7 +143,24 @@ app.use('*', (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 
-server.listen(PORT, () => {
+// Graceful shutdown handling
+process.on('SIGTERM', () => {
+  logger.info('SIGTERM received. Shutting down gracefully...');
+  server.close(() => {
+    logger.info('Process terminated');
+    process.exit(0);
+  });
+});
+
+process.on('SIGINT', () => {
+  logger.info('SIGINT received. Shutting down gracefully...');
+  server.close(() => {
+    logger.info('Process terminated');
+    process.exit(0);
+  });
+});
+
+server.listen(PORT, '0.0.0.0', () => {
   logger.info(`Server running on port ${PORT} in ${process.env.NODE_ENV || 'development'} mode`);
 });
 
